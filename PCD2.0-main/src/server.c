@@ -525,14 +525,32 @@ void delete_file_or_directory(const char *path, int client_socket) {
             }
         }
     } else {
-        // If file, delete it AAAAAAAAAAAAAAAAAAAAAAAAAIIIIIIIIIIIIIIIIIIIIIIIIIIIICCCCCCCCCCCCCCCCCIIIIIIIIIIIIIII
-        if (remove(abs_path) == 0) {
-            send(client_socket, "File deleted.\n", strlen("File deleted.\n"), 0);
-            log_activity("File deleted.");
+    // If file, delete it
+    if (remove(abs_path) == 0) {
+        // Prepare to delete the log file
+        char log_filename[MAX_BUFFER_LENGTH + 64];
+        char *extension_position = strrchr(abs_path, '.'); // Find last occurrence of '.'
+
+        // Create a copy of the abs_path to manipulate the string safely
+        char abs_path_without_ext[MAX_BUFFER_LENGTH];
+        strncpy(abs_path_without_ext, abs_path, extension_position - abs_path);
+        abs_path_without_ext[extension_position - abs_path] = '\0';
+
+        snprintf(log_filename, sizeof(log_filename), "%s.log", abs_path_without_ext); // Add .log extension
+
+        // Attempt to delete the log file
+        if (remove(log_filename) == 0) {
+            log_activity("File and corresponding log file deleted.");
+            send(client_socket, "File and corresponding log file deleted.\n", strlen("File and corresponding log file deleted.\n"), 0);
         } else {
-            handle_error(abs_path, client_socket, "Failed to delete file %s: %s\n");
+            log_activity("File deleted, but failed to delete corresponding log file.");
+            send(client_socket, "File deleted, but failed to delete corresponding log file.\n", strlen("File deleted, but failed to delete corresponding log file.\n"), 0);
         }
+    } else {
+        handle_error(abs_path, client_socket, "Failed to delete file %s: %s\n");
     }
+}
+
 }
 
 // List files and directories in a directory
