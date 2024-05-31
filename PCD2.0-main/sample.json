@@ -1,0 +1,20 @@
+{
+  "store": {
+    "book": [
+      {
+        "title": "The Catcher in the Rye",
+        "author": "J.D. Salinger",
+        "price": 10.99
+      },
+      {
+        "title": "To Kill a Mockingbird",
+        "author": "Harper Lee",
+        "price": 12.99
+      }
+    ],
+    "bicycle": {
+      "color": "red",
+      "price": 150.00
+    }
+  }
+}

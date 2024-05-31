@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<book>
+    <author>John Doe</author>
+    <title>Advanced XML Example</title>
+    <description>This is a more complex XML file example.</description>
+    <file_size>2048</file_size>
+    <chapters>
+        <chapter>
+            <chapter_number>1</chapter_number>
+            <chapter_title>Introduction</chapter_title>
+            <chapter_summary>An introduction to XML.</chapter_summary>
+        </chapter>
+        <chapter>
+            <chapter_number>2</chapter_number>
+            <chapter_title>Advanced Topics</chapter_title>
+            <chapter_summary>Discussion on advanced XML topics.</chapter_summary>
+        </chapter>
+    </chapters>
+    <metadata>
+        <created_at>2023-01-01T12:00:00Z</created_at>
+        <updated_at>2023-05-25T12:00:00Z</updated_at>
+        <tags>
+            <tag>xml</tag>
+            <tag>example</tag>
+            <tag>advanced</tag>
+        </tags>
+    </metadata>
+</book>

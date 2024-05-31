@@ -1,0 +1,29 @@
+{
+	"version":	"1.0",
+	"encoding":	"UTF-8",
+	"root":	{
+		"person":	[{
+				"__text":	"sometext",
+				"name":	"John Doe",
+				"age":	{
+					"__text":	"30",
+					"_val":	"key",
+					"_val2":	"key2"
+				},
+				"email":	"john.doe@example.com"
+			}, {
+				"name":	"Jane Smith",
+				"age":	"25",
+				"email":	"jane.smith@example.com"
+			}],
+		"book":	[{
+				"title":	"The Adventure Begins",
+				"author":	"Robert Johnson",
+				"year":	"2022"
+			}, {
+				"title":	"Some book",
+				"author":	"Another author",
+				"year":	"2000"
+			}]
+	}
+}

@@ -1,0 +1,18 @@
+<store>
+    <book>
+        <category>fiction</category>
+        <author>J. K. Rowling</author>
+        <title>Harry Potter and the Philosopher's Stone</title>
+        <price>19.99</price>
+    </book>
+    <book>
+        <category>fiction</category>
+        <author>J. R. R. Tolkien</author>
+        <title>The Lord of the Rings</title>
+        <price>22.99</price>
+    </book>
+    <bicycle>
+        <color>red</color>
+        <price>150.00</price>
+    </bicycle>
+</store>
