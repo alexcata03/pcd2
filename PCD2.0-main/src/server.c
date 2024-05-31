@@ -55,25 +55,25 @@ void create_log_file(const char *filename, const char *log_message) {
 
     snprintf(log_filename, sizeof(log_filename), "%s.log", filename); // Add .log extension
 
-    FILE *log_file = fopen(log_filename, "a");
-    if (log_file == NULL) {
+    FILE *log_file = fopen(log_filename, "a"); /* Oppen the file in appending mode */
+    if (log_file == NULL) { /* If the file could not be oppened print error message and exit */
         perror("Could not open log file");
         return;
     }
 
-    time_t now = time(NULL);
+    time_t now = time(NULL); /* Start the timer */
     fprintf(log_file, "[%s] %s\n", ctime(&now), log_message);
-    fclose(log_file);
+    fclose(log_file); /* Close the file */
 }
 // Load and validate XML file
 int load_and_validate_xml(const char *path, XMLDocument *document) {
-    if (!ends_with(path, ".xml")) {
+    if (!ends_with(path, ".xml")) { /* Check for .xml */
         fprintf(stderr, "Ok\n");
         return 0;
     }
 
     if (!XMLDocument_load(document, path)) {
-        fprintf(stderr, "Succes\n");
+        fprintf(stderr, "Succes\n"); 
         return 0;
     }
 
@@ -102,8 +102,8 @@ void convert_xml_to_json(const char *xml_path, const char *json_path) {
     }
     snprintf(json_log_path, sizeof(json_log_path), "%s.log", json_path); // Add .log extension
 
-    FILE *json_log_file = fopen(json_log_path, "a");
-    if (json_log_file) {
+    FILE *json_log_file = fopen(json_log_path, "a"); /* Open in appending mode */
+    if (json_log_file) { /* If the file was opened, write in the file and close it */
         fprintf(json_log_file, "Converted XML file '%s' to JSON file '%s'\n", xml_path, json_path);
         fclose(json_log_file);
     }
@@ -140,8 +140,8 @@ void extract_metadata(const char *filename, int client_socket) {
 }
 //Search json path
 void search_and_print_json(const char *filename, const char *json_path, int client_socket) {
-    FILE *file = fopen(filename, "rb");
-    if (!file) {
+    FILE *file = fopen(filename, "rb"); /* Open the file in binary reading mode */
+    if (!file) { /* If the file could not be oppened, print an error message, send it to the client and exit */
         char error_msg[] = "Failed to open file.\n";
         send(client_socket, error_msg, strlen(error_msg), 0);
         perror("Failed to open file");
@@ -150,19 +150,19 @@ void search_and_print_json(const char *filename, const char *json_path, int clie
 
     // Read the entire file into a string
     fseek(file, 0, SEEK_END);
-    long length = ftell(file);
+    long length = ftell(file); /* Get teh file size */
     fseek(file, 0, SEEK_SET);
-    char *json_string = (char *)malloc(length + 1);
-    if (!json_string) {
+    char *json_string = (char *)malloc(length + 1); /* Allocate memory to the buffer */
+    if (!json_string) { /* If the buffer is null , print an error message and exit */
         fclose(file);
         char error_msg[] = "Memory allocation failed\n";
-        send(client_socket, error_msg, strlen(error_msg), 0);
+        send(client_socket, error_msg, strlen(error_msg), 0); /* Send the error message to the client */
         perror("Memory allocation failed");
         return;
     }
-    fread(json_string, 1, length, file);
-    fclose(file);
-    json_string[length] = '\0';
+    fread(json_string, 1, length, file); /* Read the data from the file into the buffer  */
+    fclose(file); /* Close the file*/
+    json_string[length] = '\0'; /* Set the ending of the string */
 
     // Parse JSON
     cJSON *json = cJSON_Parse(json_string);
@@ -176,26 +176,26 @@ void search_and_print_json(const char *filename, const char *json_path, int clie
 
     // Search JSON based on the provided path
     cJSON *current = json;
-    char *token = strtok((char *)json_path, ".");
-    while (token != NULL) {
+    char *token = strtok((char *)json_path, "."); /* Tokenize the string */
+    while (token != NULL) { /* Parse while the token is not null */
         char *index_str = strchr(token, '[');
         if (index_str != NULL) {
-            *index_str = '\0';
-            int index = atoi(index_str + 1);
+            *index_str = '\0'; /* Set the ending of the string */
+            int index = atoi(index_str + 1); /* Get teh index */
             cJSON *array = cJSON_GetObjectItemCaseSensitive(current, token);
-            if (!array || !cJSON_IsArray(array)) {
+            if (!array || !cJSON_IsArray(array)) { /* If the array is null, send the error message to the client and exit */
                 char error_msg[] = "Path not found\n";
                 send(client_socket, error_msg, strlen(error_msg), 0);
                 perror("Path not found");
                 cJSON_Delete(json);
                 return;
             }
-            current = cJSON_GetArrayItem(array, index);
+            current = cJSON_GetArrayItem(array, index); /* Get the item at the position index from the array */
         } else {
-            current = cJSON_GetObjectItemCaseSensitive(current, token);
+            current = cJSON_GetObjectItemCaseSensitive(current, token); /* Get the object from the token */
         }
 
-        if (!current) {
+        if (!current) { /* IF the buffer is null, send an error message and exit */
             char error_msg[] = "Path not found\n";
             send(client_socket, error_msg, strlen(error_msg), 0);
             perror("Path not found");
@@ -764,7 +764,7 @@ void client_handler(void *arg) {
         active_admins--;
         pthread_mutex_unlock(&admin_mutex);
     } else if (strcmp(role, "simple") == 0) {
-        snprintf(response, sizeof(response), "Hello Simple User! You can upload a new metadata file or extract metadata. Type 'upload' to upload a new metadata file, 'extract' to extract metadata, or 'exit' to disconnect.\n");
+        snprintf(response, sizeof(response), "Hello Simple User! You can upload a new metadata file or extract metadata. Type 'upload' to upload a new metadata file, 'extract' to extract metadata. Type 'search' to view things based on json path or 'exit' to disconnect.\n");
         send(client_socket, response, strlen(response), 0);
         log_activity("Simple user authenticated");
 
@@ -776,7 +776,7 @@ void client_handler(void *arg) {
             if (bytes_read <= 0) break;
             buffer[bytes_read] = '\0';
             trim_newline(buffer);
-               //AAAAAAAAAAAAAAAAAAAAIIIIIIIIIIIIIIIIIIICCCCCCCCCCCCCCCCCCCIIIIIIIIIIIIIIIII
+               
             if (strcmp(buffer, "upload") == 0) {
                 send(client_socket, "Enter the path to the XML file:\n", strlen("Enter the path to the XML file:\n"), 0);
                 memset(buffer, 0, sizeof(buffer));

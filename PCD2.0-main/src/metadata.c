@@ -38,57 +38,58 @@ void extract_metadata_xml(const char *filename) {
 }
 
 void extract_metadata_json(const char *filename) {
-    FILE *file = fopen(filename, "r");
-    if (!file) {
+    FILE *file = fopen(filename, "r"); /* Open the file in reading mode */
+    if (!file) { /* If the file cannot be opened, print an error message and exit */
         log_change(filename, "extract", "Failed to open JSON file");
         return;
     }
 
-    char buffer[1024];
-    fread(buffer, 1, sizeof(buffer), file);
-    fclose(file);
+    char buffer[1024]; /* Define the buffer */
+    fread(buffer, 1, sizeof(buffer), file); /* Read the data from the file in the buffer */
+    fclose(file); /* Close the file */
 
-    cJSON *json = cJSON_Parse(buffer);
-    if (!json) {
+    cJSON *json = cJSON_Parse(buffer); /* Parse the buffer to a json node */
+    if (!json) { /* If the node is null, print an error message and exit */
         log_change(filename, "extract", "Failed to parse JSON");
         return;
     }
 
-    cJSON *author = cJSON_GetObjectItem(json, "author");
+    cJSON *author = cJSON_GetObjectItem(json, "author"); /* Get the author from the json node */
     if (cJSON_IsString(author)) {
         // printf("Author: %s\n", author->valuestring);
-        log_change(filename, "extract", "Extracted author");
+        log_change(filename, "extract", "Extracted author"); /* Log the author data */
     }
 
-    cJSON *title = cJSON_GetObjectItem(json, "title");
+    cJSON *title = cJSON_GetObjectItem(json, "title"); /* Get the title form the json node */
     if (cJSON_IsString(title)) {
         // printf("Title: %s\n", title->valuestring);
-        log_change(filename, "extract", "Extracted title");
+        log_change(filename, "extract", "Extracted title"); /* Log the file title */
     }
 
-    cJSON *description = cJSON_GetObjectItem(json, "description");
+    cJSON *description = cJSON_GetObjectItem(json, "description"); /* Get the file description */
     if (cJSON_IsString(description)) {
         // printf("Description: %s\n", description->valuestring);
-        log_change(filename, "extract", "Extracted description");
+        log_change(filename, "extract", "Extracted description"); /* Log the description data */
     }
 
-    cJSON *file_size = cJSON_GetObjectItem(json, "file_size");
+    cJSON *file_size = cJSON_GetObjectItem(json, "file_size"); /* Get the file size */
     if (cJSON_IsNumber(file_size)) {
         // printf("File Size: %d\n", file_size->valueint);
-        log_change(filename, "extract", "Extracted file_size");
+        log_change(filename, "extract", "Extracted file_size"); /* Log the file ize */
     }
 
-    cJSON_Delete(json);
+    cJSON_Delete(json); /* Delete the json node */
 }
 
 
 void log_change(const char *filename, const char *change_type, const char *details) {
-    FILE *change_log_file = fopen("changes.log", "a");
-    if (change_log_file == NULL) {
+    FILE *change_log_file = fopen("changes.log", "a"); /* Open the changes log in appending mode */
+    if (change_log_file == NULL) { /* If the file is null, print an error message and exti */
         perror("Could not open change log file");
         return;
     }
-    time_t now = time(NULL);
-    fprintf(change_log_file, "[%s] File: %s, Change: %s, Details: %s\n", ctime(&now), filename, change_type, details);
-    fclose(change_log_file);
+    time_t now = time(NULL); /* Start the time counter */
+    /* Write the data in th log file */
+    fprintf(change_log_file, "[%s] File: %s, Change: %s, Details: %s\n", ctime(&now), filename, change_type, details); 
+    fclose(change_log_file); /* Close the data*/
 }
